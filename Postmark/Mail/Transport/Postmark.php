@@ -50,74 +50,56 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
 
         $to = array();
         if (array_key_exists('To', $headers)) {
-            //reset($headers['To']);
             foreach($headers['To'] as $key => $val) {
-                if(empty($key) || $key != 'append')
-                {
+                if(empty($key) || $key != 'append') {
                     $to[] = $val;
                 }
             }
-            //reset($headers['To']);
         }
 
         $cc = array();
         if (array_key_exists('Cc', $headers)) {
-            //reset($headers['Cc']);
             foreach($headers['Cc'] as $key => $val) {
-                if(empty($key) || $key != 'append')
-                {
+                if(empty($key) || $key != 'append') {
                     $cc[] = $val;
                 }
             }
-            //reset($headers['Cc']);
         }
 
         $bcc = array();
         if (array_key_exists('Bcc', $headers)) {
-            //reset($headers['Bcc']);
             foreach($headers['Bcc'] as $key => $val ) {
-                if(empty($key) || $key != 'append')
-                {
+                if(empty($key) || $key != 'append') {
                     $bcc[] = $val;
                 }
             }
-            //reset($headers['Bcc']);
         }
 
         $from = array();
         if (array_key_exists('From', $headers)) {
-            //reset($headers['From']);
             foreach($headers['From'] as $key => $val) {
-                if(empty($key) || $key != 'append')
-                {
+                if(empty($key) || $key != 'append') {
                     $from[] = $val;
                 }
             }
-            //reset($headers['From']);
         }
 
         $replyto = array();
         if (array_key_exists('Reply-To', $headers)) {
-            //reset($headers['Reply-To']);
             foreach($headers['Reply-To'] as $key => $val) {
-                if(empty($key) || $key != 'append')
-                {
+                if(empty($key) || $key != 'append') {
                     $replyto[] = $val;
                 }
             }
-            //reset($headers['Reply-To']);
         }
 
         $tags = array();
         if (array_key_exists('postmark-tag', $headers)) {
-            //reset($headers['postmark-tag']);
             foreach ($headers['postmark-tag'] as $key => $val) {
-                if (empty($key) || $key != 'append')
-                {
+                if (empty($key) || $key != 'append') {
                     $tags[] = $val;
                 }
             }
-            //reset($headers['postmark-tag']);
         }
 
         $postData = array(
