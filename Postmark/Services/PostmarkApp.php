@@ -161,16 +161,4 @@ class Postmark_Services_PostmarkApp
 
     }
 
-
-    /**
-     * _prepareMail
-     *
-     * @return void
-     */
-    private function _prepareMail()
-    {
-        // blablabla
-    }
-
-
 }
