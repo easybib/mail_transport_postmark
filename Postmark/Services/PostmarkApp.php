@@ -141,10 +141,9 @@ class Postmark_Services_PostmarkApp
         $response = $this->_client->request();
 
         if ($response->getStatus() != 200) {
-            throw new Exception(
-                'Mail not sent - Postmark returned ' . $response->getStatus()
-                . ' - ' . $response->getMessage()
-            );
+            $error = json_decode($response->getBody())->Message;
+            throw new RuntimeException('Mail not sent: - ' . $error);
+
         }
     }
 
@@ -158,7 +157,7 @@ class Postmark_Services_PostmarkApp
         Zend_Mail::setDefaultTransport(
             new Postmark_Mail_Transport_Postmark($this)
         );
-
     }
+
 
 }
