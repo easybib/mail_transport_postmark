@@ -48,10 +48,10 @@ class Postmark_Services_PostmarkApp
     /**
      * __construct
      *
-     * @param array $options
+     * @param mixed $options
      * @return void
      */
-    public function __construct(array $options = null)
+    public function __construct($options = null)
     {
         $this->_prepareAdapter();
         $this->_mail = new Zend_Mail();
@@ -64,11 +64,15 @@ class Postmark_Services_PostmarkApp
     /**
      * setOptions
      *
-     * @param array $options
+     * @param mixed $options
      * @return void
      */
-    public function setOptions(array $options)
+    public function setOptions($options)
     {
+        if (! is_object($options) && ! is_array($options)) {
+            throw new Exception('Bad options format, should be object or array');
+        }
+
         foreach ($options as $key => $value) {
             switch ($key) {
             case 'apiKey':
