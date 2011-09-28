@@ -11,12 +11,11 @@ function Post_testAutoloader($class) {
         include_once 'Zend/Mail/Transport/Abstract.php';
         include_once 'Zend/Mail.php';
         include_once 'Zend/Http/Client.php';
+        include_once 'Zend/Db/Table/Abstract.php';
     } catch (Exception $e) {
         throw new Exception('Zend Framework should be in your include path.');
     }
 
-    include_once dirname(__DIR__) . '/Mail/Transport/Postmark.php';
-    include_once dirname(__DIR__) . '/Services/PostmarkApp.php';
     return false;
 }
 

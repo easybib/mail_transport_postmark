@@ -1,5 +1,6 @@
 <phpunit bootstrap="./TestInit.php" colors="true" syntaxCheck="true" verbose="true">
   <testsuite name="PostmarkApp">
     <file>PostmarkAppTests.php</file>
+    <file>PostmarkApp_BounceTests.php</file>
   </testsuite>
 </phpunit>

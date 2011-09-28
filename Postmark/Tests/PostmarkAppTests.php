@@ -1,5 +1,9 @@
 <?php
 
+include_once dirname(__DIR__) . '/Mail/Transport/Postmark.php';
+include_once dirname(__DIR__) . '/Services/PostmarkApp.php';
+
+
 class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 {
 
