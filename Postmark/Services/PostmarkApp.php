@@ -136,14 +136,9 @@ class Postmark_Services_PostmarkApp
                 'X-Postmark-Server-Token' => $this->_apiKey
             )
         );
-
         $this->_client->setRawData(json_encode($postData), 'application/json');
-        $response = $this->_client->request();
 
-        if ($response->getStatus() != 200) {
-            $body = json_decode($response->getBody());
-            throw new RuntimeException('Mail not sent: ' . $body->Message);
-        }
+        $this->_checkResponse();
     }
 
     /**
@@ -156,6 +151,22 @@ class Postmark_Services_PostmarkApp
         Zend_Mail::setDefaultTransport(
             new Postmark_Mail_Transport_Postmark($this)
         );
+    }
+
+    /**
+     * _checkResponse
+     *
+     * @return void
+     * @throws RuntimeException if the mail was not sent
+     */
+    private function _checkResponse()
+    {
+        $response = $this->_client->request();
+
+        if ($response->getStatus() != 200) {
+            $body = json_decode($response->getBody());
+            throw new RuntimeException('Mail not sent: ' . $body->Message);
+        }
     }
 
 
