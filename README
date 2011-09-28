@@ -5,12 +5,12 @@ Usage is as simple as:
 <?php
 
 $options = new stdClass();
-$options->apiKey = 'Your Api Key';
-$options->from('alistair...', 'Alistair Phillips');
-$options->to('some-other-address', 'Alistair Phillips');
-$options->subject('Welcome to...');
-$options->bodyText('This is an example of a text body');
-$options->bodyHtml('This is an example of an HTML body with <strong>bold</strong>');
+$options->apiKey   = 'Your Api Key';
+$options->from     = 'Alistair Phillips <your-email-address>';
+$options->to       = 'Alistair Phillips <some-other-address>';
+$options->subject  = 'Welcome to...';
+$options->bodyText = 'This is an example of a text body';
+$options->bodyHtml = 'This is an example of an HTML body with <strong>bold</strong>';
 
 $postmark = new Postmark_Services_PostmarkApp($options);
 $postmark->send();
