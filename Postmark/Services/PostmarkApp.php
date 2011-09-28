@@ -141,9 +141,8 @@ class Postmark_Services_PostmarkApp
         $response = $this->_client->request();
 
         if ($response->getStatus() != 200) {
-            $error = json_decode($response->getBody())->Message;
-            throw new RuntimeException('Mail not sent: - ' . $error);
-
+            $body = json_decode($response->getBody());
+            throw new RuntimeException('Mail not sent: ' . $body->Message);
         }
     }
 
