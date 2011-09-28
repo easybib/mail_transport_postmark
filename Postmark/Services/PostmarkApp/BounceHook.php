@@ -51,15 +51,43 @@ class Postmark_Services_PostmarkApp_BounceHook
     {
         $body = $request->getRawBody();
         $data = json_decode($body);
+
         if (is_object($data)) {
             $data = get_object_vars($data);
         }
+
+        $data = $this->_adaptKeyNames($data);
 
         try {
             $this->_table->insert($data);
         } catch (Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * _adaptKeyNames
+     * Adapt array given by Postmark to fit to DB columns naming convention
+     *
+     * @param array $arr ''
+     *
+     * @return array
+     */
+    private function _adaptKeyNames(array $arr)
+    {
+        $result = array();
+        foreach ($arr as $key => $value) {
+            /**
+             * @desc Special case
+             * http://developer.postmarkapp.com/developer-bounces.html#bounce-hooks
+             */
+            if ($key == 'ID') {
+                $key = 'PostmarkId';
+            }
+            $key = preg_replace('/\B([A-Z])/', '_$1', $key);
+            $result[strtolower($key)] = $value;
+        }
+        return $result;
     }
 
 }

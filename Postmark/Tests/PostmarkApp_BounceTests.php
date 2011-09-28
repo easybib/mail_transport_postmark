@@ -25,12 +25,21 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
         $db = new Postmark_Services_Tests_Db();
 
         $data = array(
-            'id'         => 1,
-            'type'       => 'HardBounce',
-            'email'      => 'jim@test.com',
-            'bounced_at' => '2011-09-28',
-            'details'    => 'test bounce',
+            'ID'        => 42,
+            'Type'      => 'HardBounce',
+            'Email'     => 'jim@test.com',
+            'BouncedAt' => '2010-04-01',
+            'Details'   => 'test bounce',
         );
+        $expected = array(
+            'id'          => 1,
+            'postmark_id' => 42,
+            'type'        => 'HardBounce',
+            'email'       => 'jim@test.com',
+            'bounced_at'  => '2010-04-01',
+            'details'     => 'test bounce',
+        );
+
 
         $this->request->setMethod('POST')->setPost(array())
             ->setRawBody(json_encode($data));
@@ -40,7 +49,7 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
 
         $fetched = $db->fetchRow($db->select()->where('id = ?', 1));
 
-        $this->assertEquals($fetched->toArray(), $data);
+        $this->assertEquals($fetched->toArray(), $expected);
     }
 
 
@@ -60,16 +69,30 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
             $db->query('DROP TABLE IF EXISTS tests');
             $db->query(
                 'CREATE TABLE IF NOT EXISTS tests ('
-                . 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
-                . 'type VARCHAR(20) NOT NULL, email VARCHAR(50) NOT NULL, '
-                . 'bounced_at VARCHAR(10) NOT NULL, details VARCHAR(50) NOT '
-                . 'NULL);'
+                . 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, postmark_id '
+                . 'INTEGER NOT NULL, type VARCHAR(20) NOT NULL, email '
+                . 'VARCHAR(50) NOT NULL, bounced_at VARCHAR(10) NOT NULL, '
+                . 'details VARCHAR(50) NOT NULL);'
             );
         } catch (Exception $e) {
             throw $e;
         }
 
         Zend_Registry::set('tests', $db);
+    }
+
+
+    protected function setUp()
+    {
+        Zend_Session::$_unitTestEnabled = true;
+        parent::setUp();
+    }
+
+
+    protected function tearDown()
+    {
+        $this->resetRequest()->resetResponse();
+        parent::tearDown();
     }
 
 }
