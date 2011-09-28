@@ -3,16 +3,19 @@ Postmarkapp is a "email delivery in the cloud" service for sending out transacti
 Usage is as simple as:
 
 <?php
-    Zend_Mail::setDefaultTransport( new Mail_Transport_Postmark( 'your_api_key' ) );
- 
-    $mail = new Zend_Mail();
-    $mail->setFrom( 'alistair...', 'Alistair Phillips' );
-    $mail->setReplyTo( 'some-other-address', 'Alistair Phillips' );
-    $mail->addTo( 'new-user-address', 'Joe Smith' );
-    $mail->setSubject( 'Welcome to...' );
-    $mail->setBodyText( 'This is an example of a text body' );
-    $mail->setBodyHtml( 'This is an example of an HTML body with <strong>bold</strong>' );
-    $mail->send();
+
+$options = new stdClass();
+$options->apiKey   = 'Your Api Key';
+$options->setFrom( 'alistair...', 'Alistair Phillips' );
+$options->setReplyTo( 'some-other-address', 'Alistair Phillips' );
+$options->addTo( 'new-user-address', 'Joe Smith' );
+$options->setSubject( 'Welcome to...' );
+$options->setBodyText( 'This is an example of a text body' );
+$options->setBodyHtml( 'This is an example of an HTML body with <strong>bold</strong>' );
+
+$postmark = new Postmark_Services_PostmarkApp($options);
+$postmark->send();
+
 ?>
 
 One call to setDefaultTransport() and you're now using the cloud for delivery. Added support for attachments to the class.
@@ -20,11 +23,11 @@ One call to setDefaultTransport() and you're now using the cloud for delivery. A
 Alternatively, you can use our application resource.
 In your application/config/application.ini, add these lines:
 
-		; This makes sure that your Zend Framework application can find the correct
-		; resource file. Make sure, the Postmark folder is within your library folder.
+    ; This makes sure that your Zend Framework application can find the correct
+    ; resource file. Make sure, the Postmark folder is within your library folder.
     pluginPaths.Postmark_Application_Resource = "Postmark/Application/Resource"
 
-		; This initializes the Postmark drop-in replacement.
+    ; This initializes the Postmark drop-in replacement.
     resources.postmark.apikey = "your_api_key"
 
 Now you're good to go and don't have to manually do anything else.
