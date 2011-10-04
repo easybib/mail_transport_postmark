@@ -159,18 +159,37 @@ class Postmark_Services_PostmarkApp
             throw new Exception('Post data is missing for Http Client.');
         }
 
-        $this->_client->setUri($this->_uri);
-        $this->_client->setMethod(Zend_Http_Client::POST);
+        $request = $this->makeRequest(
+            $this->_uri, Zend_Http_Client::POST, $postData
+        );
+
+        $this->parseResponse($request);
+    }
+
+    /**
+     * makeRequest
+     *
+     * @param string $uri ''
+     * @param mixed  $method GET or POST
+     * @param mixed  $data ''
+     *
+     * @return void
+     */
+    protected function makeRequest($uri, $method, $data)
+    {
+        $this->_client->setUri($uri);
+        $this->_client->setMethod($method);
         $this->_client->setHeaders(
             array(
                 'Accept' => 'application/json',
                 'X-Postmark-Server-Token' => $this->_apiKey
             )
         );
-        $this->_client->setRawData(json_encode($postData), 'application/json');
+        $this->_client->setRawData(json_encode($data), 'application/json');
 
-        $this->parseResponse($this->_client->request());
+        return $this->_client->request();
     }
+
 
     /**
      * parseResponse
