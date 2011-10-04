@@ -36,11 +36,6 @@ class Services_PostmarkApp
     private $_uri = 'http://api.postmarkapp.com/email';
 
     /**
-     * @var Zend_Mail $_mail
-     */
-    private $_mail;
-
-    /**
      * @var Zend_Http_Client $_client
      */
     private $_client;
@@ -52,73 +47,10 @@ class Services_PostmarkApp
      * @param mixed $options
      * @return void
      */
-    public function __construct($options = null)
+    public function __construct($apiKey)
     {
-        $this->_prepareAdapter();
-        $this->_mail   = new Zend_Mail();
+        $this->_apiKey = $apiKey;
         $this->_client = $this->getClient();
-
-        if ($options) {
-            $this->setOptions($options);
-        }
-    }
-
-    /**
-     * setOptions
-     *
-     * @param mixed $options
-     * @return void
-     */
-    public function setOptions($options)
-    {
-        if (! is_object($options) && ! is_array($options)) {
-            throw new Exception('Bad options format, should be object or array');
-        }
-
-        foreach ($options as $key => $value) {
-            switch ($key) {
-            case 'apiKey':
-                $this->_apiKey = $value;
-                break;
-            case 'uri':
-                $this->_uri = $value;
-                break;
-            case 'from':
-                $this->_mail->setFrom($value);
-                break;
-            case 'replyTo':
-                $this->_mail->setReplyTo($value);
-                break;
-            case 'to':
-                $this->_mail->addTo($value);
-                break;
-            case 'subject':
-                $this->_mail->setSubject($value);
-                break;
-            case 'bodyText':
-                $this->_mail->setBodyText($value);
-                break;
-            case 'bodyHtml':
-                $this->_mail->setBodyHtml($value);
-                break;
-            }
-        }
-    }
-
-    /**
-     * send
-     *
-     * @return void
-     * @throws Exception if email could not be sent
-     */
-    public function send()
-    {
-        try {
-            $this->_mail->send();
-            return true;
-        } catch (Exception $e) {
-            throw $e;
-        }
     }
 
     /**
@@ -147,22 +79,23 @@ class Services_PostmarkApp
     }
 
     /**
-     * setupClient
+     * send
      *
      * @param array $postData
      * @return void
      */
-    public function setupClient(array $postData = null)
+    public function send(array $postData)
     {
-        if (! $postData) {
-            throw new Exception('Post data is missing for Http Client.');
+        try {
+            $request = $this->makeRequest(
+                $this->_uri, Zend_Http_Client::POST, $postData
+            );
+
+            $response = $this->parseResponse($request);
+            return true;
+        } catch (Exception $e) {
+            throw $e;
         }
-
-        $request = $this->makeRequest(
-            $this->_uri, Zend_Http_Client::POST, $postData
-        );
-
-        $this->parseResponse($request);
     }
 
     /**
@@ -189,7 +122,6 @@ class Services_PostmarkApp
         return $this->_client->request();
     }
 
-
     /**
      * parseResponse
      *
@@ -204,18 +136,6 @@ class Services_PostmarkApp
             throw new RuntimeException('Mail not sent: ' . $body->Message);
         }
         return $response;
-    }
-
-    /**
-     * _prepareAdapter
-     *
-     * @return void
-     */
-    private function _prepareAdapter()
-    {
-        Zend_Mail::setDefaultTransport(
-            new Postmark_Mail_Transport_Postmark($this)
-        );
     }
 
 }
