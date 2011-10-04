@@ -11,6 +11,15 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     private $_apiKey = 'c56ceeff-0661-4cd9-a85d-a0e739c1f71f';
     private $_from   = 'test postmark <easybib_postmark@mailinator.com';
 
+    private function _getMakeRequestMock()
+    {
+        return $this->getMock(
+            'Services_PostmarkApp',
+            array('makeRequest',),
+            array($this->_apiKey)
+        );
+
+    }
 
     public function testWrongSignatureThrowsException()
     {
@@ -84,11 +93,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException($exception);
 
-        $pm = $this->getMock(
-            'Services_PostmarkApp',
-            array('makeRequest',),
-            array($this->_apiKey)
-        );
+        $pm = $this->_getMakeRequestMock();
 
         $body = '{"Message": "blabla"}';
         $code = 500;
@@ -113,4 +118,265 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $client->setAdapter(new Zend_Http_Client_Adapter_Test);
         return $client;
     }
+
+
+    /**
+     * Test parseResponse exceptions.
+     */
+    public function testNonAuthorizedExceptionFromParseResponse()
+    {
+        $this->setExpectedException('ErrorException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": ""}';
+        $code = 401;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testInvalidApiExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "0"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testValidationFailedExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "300"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testSignatureNotFoundExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "400"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testSignatureNotConfirmedExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "401"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testInvalidJsonExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "402"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testIncompatibleJsonExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "403"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testNoCreditsExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "405"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testInactiveTenantExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "406"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testBounceNotFoundExceptionFromParseResponse()
+    {
+        $this->setExpectedException('RuntimeException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "407"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testBadArgumentsBounceExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "408"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testJsonRequiredExceptionFromParseResponse()
+    {
+        $this->setExpectedException('LogicException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "409"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testTooManyBatchExceptionFromParseResponse()
+    {
+        $this->setExpectedException('RuntimeException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "410"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testIncorrectFieldExceptionFromParseResponse()
+    {
+        $this->setExpectedException('UnexpectedValueException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": "666"}';
+        $code = 422;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+    public function testMailNotSentExceptionFromParseResponse()
+    {
+        $this->setExpectedException('RuntimeException');
+
+        $pm = $this->_getMakeRequestMock();
+
+        $body = '{"Message": "", "ErrorCode": ""}';
+        $code = 666;
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($this->getHttpClient());
+        $pm->send(array());
+    }
+
+
 }
