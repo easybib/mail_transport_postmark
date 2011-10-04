@@ -2,6 +2,7 @@
 
 require_once 'Postmark/Mail/Transport/Postmark.php';
 require_once 'Services/PostmarkApp.php';
+require_once 'Zend/Http/Client/Adapter/Test.php';
 
 
 class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
@@ -75,5 +76,43 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $pm->setClient(new Zend_Http_Client);
         $client = $pm->getClient();
         $this->assertInstanceOf('Zend_Http_Client', $client);
+    }
+
+    /**
+     * Test various exceptions from the PostmarkApp service.
+     */
+    public function testAnExceptionFromPostmark()
+    {
+        $exception = 'RuntimeException';
+
+        $this->setExpectedException($exception);
+
+        $pm = $this->getMock(
+            'Services_PostmarkApp',
+            array('makeRequest',)
+        );
+
+        $body = '';
+        $code = 500;
+
+        $client = $this->getHttpClient();
+
+        $pm->expects($this->once())
+            ->method('makeRequest')
+            ->will($this->returnValue(new Zend_Http_Response($code, array(), $body)));
+
+        $pm->setClient($client);
+
+        $pm->send(array());
+    }
+
+    /**
+     * @return Zend_Http_Client
+     */
+    protected function getHttpClient()
+    {
+        $client = new Zend_Http_Client;
+        $client->setAdapter(new Zend_Http_Client_Adapter_Test);
+        return $client;
     }
 }
