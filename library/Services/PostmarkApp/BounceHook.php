@@ -21,7 +21,7 @@
  * @link     http://www.easybib.com
  */
 
-class Postmark_Services_PostmarkApp_BounceHook
+class Services_PostmarkApp_BounceHook
 {
 
     /**
