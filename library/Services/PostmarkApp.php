@@ -191,7 +191,7 @@ class Services_PostmarkApp
             }
         }
 
-        return $json;
+        return $body;
     }
 
 }
