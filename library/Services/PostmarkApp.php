@@ -47,8 +47,11 @@ class Services_PostmarkApp
      * @param mixed $options
      * @return void
      */
-    public function __construct($apiKey)
+    public function __construct($apiKey = null)
     {
+        if (! $apiKey) {
+            throw new Exception('no api key given');
+        }
         $this->_apiKey = $apiKey;
         $this->_client = $this->getClient();
     }

@@ -16,25 +16,24 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Exception');
 
-        $options = new stdClass();
-        $options->apiKey   = 'a-Wrong-Key';
-        $options->from     = 'yvan volochine <contact@anymail.com>';
-        $options->to       = 'egr <egr@anymail.com>';
-        $options->subject  = 'hola huevon !!!';
-        $options->bodyText = 'salut bonjour buenos dias';
+        $options = array(
+            'From'     => 'yvan volochine <contact@anymail.com>',
+            'To'       => 'egr <egr@anymail.com>',
+            'Subject'  => 'hola huevon !!!',
+            'TextBody' => 'salut bonjour buenos dias'
+        );
 
-        $postmark = new Services_PostmarkApp();
-        $postmark->setOptions($options);
-        $postmark->send();
+        $postmark = new Services_PostmarkApp('a-Wrong-Key');
+        $postmark->send($options);
     }
 
 
     public function testMissingOptionsThrowsException()
     {
-        $this->setExpectedException('Zend_Mail_Transport_Exception');
+        $this->setExpectedException('RuntimeException');
 
-        $postmark = new Services_PostmarkApp();
-        $postmark->send();
+        $postmark = new Services_PostmarkApp($this->_apiKey);
+        $postmark->send(array());
     }
 
 
@@ -42,15 +41,14 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('RuntimeException');
 
-        $options = new stdClass();
-        $options->apiKey   = $this->_apiKey;
-        $options->to       = 'egr <any@mail.com>';
-        $options->subject  = 'hola huevon !!!';
-        $options->bodyText = 'salut bonjour buenos dias';
+        $options = array(
+            'To'       => 'egr <any@mail.com>',
+            'Subject'  => 'hola huevon !!!',
+            'TextBody' => 'salut bonjour buenos dias'
+        );
 
-        $postmark = new Services_PostmarkApp();
-        $postmark->setOptions($options);
-        $postmark->send();
+        $postmark = new Services_PostmarkApp($this->_apiKey);
+        $postmark->send($options);
     }
 
 
@@ -58,21 +56,20 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('RuntimeException');
 
-        $options = new stdClass();
-        $options->apiKey   = $this->_apiKey;
-        $options->from     = $this->_from;
-        $options->subject  = 'hola huevon !!!';
-        $options->bodyText = 'salut bonjour buenos dias';
+        $options = array(
+            'From'     => $this->_from,
+            'Subject'  => 'hola huevon !!!',
+            'TExtBody' => 'salut bonjour buenos dias'
+        );
 
-        $postmark = new Services_PostmarkApp();
-        $postmark->setOptions($options);
-        $postmark->send();
+        $postmark = new Services_PostmarkApp($this->_apiKey);
+        $postmark->send($options);
     }
 
 
     public function testSetGetClient()
     {
-        $pm = new Services_PostmarkApp();
+        $pm = new Services_PostmarkApp($this->_apiKey);
         $pm->setClient(new Zend_Http_Client);
         $client = $pm->getClient();
         $this->assertInstanceOf('Zend_Http_Client', $client);
@@ -89,10 +86,11 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
         $pm = $this->getMock(
             'Services_PostmarkApp',
-            array('makeRequest',)
+            array('makeRequest',),
+            array($this->_apiKey)
         );
 
-        $body = '';
+        $body = '{"Message": "blabla"}';
         $code = 500;
 
         $client = $this->getHttpClient();
