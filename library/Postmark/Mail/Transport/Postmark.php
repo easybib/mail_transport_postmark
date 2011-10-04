@@ -134,7 +134,7 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
             $postData['Attachments'] = $attachments;
         }
 
-        $this->_postmark->setupClient($postData);
+        $this->_postmark->send($postData);
     }
 
 }
