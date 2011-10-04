@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Zend/Test/PHPUnit/ControllerTestCase.php';
-require_once dirname(__DIR__) . '/Services/PostmarkApp/BounceHook.php';
+require_once 'Services/PostmarkApp/BounceHook.php';
 require_once 'Db.php';
 
 
@@ -15,14 +15,14 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
     public function testMissingDbTableThrowsException()
     {
         $this->setExpectedException('Exception');
-        $hook = new Postmark_Services_PostmarkApp_BounceHook();
+        $hook = new Services_PostmarkApp_BounceHook();
     }
 
 
     public function testSaveData()
     {
         $this->_setupDb();
-        $db = new Postmark_Services_Tests_Db();
+        $db = new Services_Tests_Db();
 
         $data = array(
             'ID'        => 42,
@@ -44,7 +44,7 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
         $this->request->setMethod('POST')->setPost(array())
             ->setRawBody(json_encode($data));
 
-        $hook = new Postmark_Services_PostmarkApp_BounceHook($db);
+        $hook = new Services_PostmarkApp_BounceHook($db);
         $hook->saveData($this->request);
 
         $fetched = $db->fetchRow($db->select()->where('id = ?', 1));

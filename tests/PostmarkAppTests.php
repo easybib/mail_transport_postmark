@@ -1,7 +1,7 @@
 <?php
 
-include_once dirname(__DIR__) . '/Mail/Transport/Postmark.php';
-include_once dirname(__DIR__) . '/Services/PostmarkApp.php';
+require_once 'Postmark/Mail/Transport/Postmark.php';
+require_once 'Services/PostmarkApp.php';
 
 
 class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
@@ -22,7 +22,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $options->subject  = 'hola huevon !!!';
         $options->bodyText = 'salut bonjour buenos dias';
 
-        $postmark = new Postmark_Services_PostmarkApp();
+        $postmark = new Services_PostmarkApp();
         $postmark->setOptions($options);
         $postmark->send();
     }
@@ -32,7 +32,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Zend_Mail_Transport_Exception');
 
-        $postmark = new Postmark_Services_PostmarkApp();
+        $postmark = new Services_PostmarkApp();
         $postmark->send();
     }
 
@@ -47,7 +47,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $options->subject  = 'hola huevon !!!';
         $options->bodyText = 'salut bonjour buenos dias';
 
-        $postmark = new Postmark_Services_PostmarkApp();
+        $postmark = new Services_PostmarkApp();
         $postmark->setOptions($options);
         $postmark->send();
     }
@@ -63,7 +63,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $options->subject  = 'hola huevon !!!';
         $options->bodyText = 'salut bonjour buenos dias';
 
-        $postmark = new Postmark_Services_PostmarkApp();
+        $postmark = new Services_PostmarkApp();
         $postmark->setOptions($options);
         $postmark->send();
     }
@@ -71,10 +71,9 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
     public function testSetGetClient()
     {
-        $pm = new Postmark_Services_PostmarkApp();
+        $pm = new Services_PostmarkApp();
         $pm->setClient(new Zend_Http_Client);
         $client = $pm->getClient();
         $this->assertInstanceOf('Zend_Http_Client', $client);
     }
-
 }

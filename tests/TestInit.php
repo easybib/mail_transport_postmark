@@ -20,3 +20,4 @@ function Post_testAutoloader($class) {
 }
 
 spl_autoload_register('Post_testAutoloader');
+set_include_path(dirname(__DIR__) . '/library:' . get_include_path());

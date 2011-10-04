@@ -33,7 +33,7 @@
  */
 
 
-class Postmark_Services_Tests_Db extends Zend_Db_Table_Abstract
+class Services_Tests_Db extends Zend_Db_Table_Abstract
 {
     /*
      * @var string $_name ..
