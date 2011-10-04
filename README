@@ -4,18 +4,42 @@ Usage is as simple as:
 
 <?php
 
-$options = new stdClass();
-$options->apiKey   = 'Your Api Key';
-$options->from     = 'Alistair Phillips <your-email-address>';
-$options->to       = 'Alistair Phillips <some-other-address>';
-$options->subject  = 'Welcome to...';
-$options->bodyText = 'This is an example of a text body';
-$options->bodyHtml = 'This is an example of an HTML body with <strong>bold</strong>';
+$options = array(
+    'From'     => 'Alistair Phillips <your-email-address>',
+    'To'       => 'Alistair Phillips <some-other-address>',
+    'Subject'  => 'Test',
+    'TextBody' => 'hello there',
+    'HtmlBody' => '<b>hello</b>'
+);
 
-$postmark = new Postmark_Services_PostmarkApp($options);
+$postmark = new Postmark_Services_PostmarkApp('Your API Key');
+
 if ($postmark->send()) {
     $message = 'your email was sent successfully';
 };
+
+
+
+
+// OR
+
+
+
+
+$postmark  = new Services_PostmarkApp('Your API Key');
+$transport = new Postmark_Mail_Transport_Postmark($postmark)
+
+Zend_Mail::setDefaultTransport($transport);
+
+$mail = new Zend_Mail();
+$mail->setFrom('your-email-address', 'Alistair Phillips');
+$mail->setReplyTo('some-other-address', 'Alistair Phillips');
+$mail->addTo('an-email-address', 'Joe Smith' );
+$mail->setSubject( 'Welcome to...' );
+$mail->setBodyText( 'This is an example of a text body' );
+$mail->setBodyHtml( 'This is an example of an HTML body with <b>bold</b>' );
+
+$mail->send();
 
 ?>
 
