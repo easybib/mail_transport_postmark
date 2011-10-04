@@ -1,6 +1,6 @@
 <?php
 
-class App_Application_Resource_Postmark
+class Postmark_Application_Resource_Postmark
     extends \Zend_Application_Resource_ResourceAbstract
 {
     public function init()
