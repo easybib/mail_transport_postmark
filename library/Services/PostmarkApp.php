@@ -128,17 +128,70 @@ class Services_PostmarkApp
     /**
      * parseResponse
      *
+     * Returns JSON from the response, and tries to determine if there's an error
+     * and supply meaningful exceptions in return.
+     *
+     * If all goes well, we return the body (stdClass).
+     *
      * @param Zend_Controller_Http_Response $response
-     * @return Zend_Controller_Http_Response
-     * @throws RuntimeException if the mail was not sent
+     *
+     * @return stdClass
+     *
+     * @throws RuntimeException         If the mail was not sent
+     * @throws UnexpectedValueException If Postmark couldn't handle the payload.
      */
     protected function parseResponse($response)
     {
-        if ($response->getStatus() != 200) {
-            $body = json_decode($response->getBody());
-            throw new RuntimeException('Mail not sent: ' . $body->Message);
+        $status = $response->getStatus();
+        $body   = json_decode($response->getBody());
+
+        if ($json === false) {
+            throw new RuntimeException("Failed to parse response from Postmark.");
         }
-        return $response;
+
+        if ($status != 200) {
+
+            switch ($status) {
+            case 401:
+                throw new ErrorException("Not authorized. (see Postmark credentials)", $status);
+            case 422:
+                switch ($body->ErrorCode) {
+                case 0:
+                    throw new LogicException("Missing or invalid API-Token.", $status);
+                case 300:
+                    throw new LogicException("Validation failed for the email request JSON data that you provided.", $status);
+                case 400:
+                    throw new LogicException("Sender signature not found.", $status);
+                case 401:
+                    throw new LogicException("Sender signature not confirmed.", $status);
+                case 402:
+                    throw new LogicException("Invalid JSON.", $status);
+                case 403:
+                    throw new LogicException("Incompatible JSON.", $status);
+                case 405:
+                    throw new LogicException("No credits.", $status);
+                case 406:
+                    throw new LogicException("Inactive tenant.", $status);
+                case 407:
+                    throw new RuntimeException("Bounce not found.", $status);
+                case 408:
+                    throw new LogicException("You provided bad arguments as a bounces filter.", $status);
+                case 409:
+                    throw new LogicException("JSON required (Content-Type/Accept header)", $status);
+                case 410:
+                    throw new RuntimeException("Too many batch messages.", $status);
+                default:
+                    throw new UnexpectedValueException("Incorrect fields, or json.", $status);
+                }
+                break;
+            case 500:
+                throw new RuntimeException("Postmark error", $status);
+            default:
+                throw new RuntimeException('Mail not sent: ' . $body->Message, $status);
+            }
+        }
+
+        return $json;
     }
 
 }
