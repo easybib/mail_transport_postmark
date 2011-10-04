@@ -145,7 +145,7 @@ class Services_PostmarkApp
         $status = $response->getStatus();
         $body   = json_decode($response->getBody());
 
-        if ($json === false) {
+        if ($body === false) {
             throw new RuntimeException("Failed to parse response from Postmark.");
         }
 
