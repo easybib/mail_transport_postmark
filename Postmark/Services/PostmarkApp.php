@@ -21,6 +21,8 @@
  * @link     http://www.easybib.com
  */
 
+require_once 'Zend/Http/Client.php';
+
 class Postmark_Services_PostmarkApp
 {
 
@@ -42,7 +44,7 @@ class Postmark_Services_PostmarkApp
     /**
      * @var Zend_Http_Client $_client
      */
-    private $_client = '';
+    private $_client;
 
 
     /**
@@ -54,7 +56,8 @@ class Postmark_Services_PostmarkApp
     public function __construct($options = null)
     {
         $this->_prepareAdapter();
-        $this->_mail = new Zend_Mail();
+        $this->_mail   = new Zend_Mail();
+        $this->_client = $this->getClient();
 
         if ($options) {
             $this->setOptions($options);
@@ -118,6 +121,30 @@ class Postmark_Services_PostmarkApp
         }
     }
 
+    /**
+     * setClient
+     *
+     * @param Zend_Http_Client $client ''
+     * @return void
+     * @todo be able to use something else than Zend_Http_Client ??
+     */
+    public function setClient(Zend_Http_Client $client)
+    {
+        $this->_client = $client;
+    }
+
+    /**
+     * getClient
+     *
+     * @return Zend_Http_Client
+     */
+    public function getClient()
+    {
+        if ($this->_client === null) {
+            $this->_client = new Zend_Http_Client();
+        }
+        return $this->_client;
+    }
 
     /**
      * setupClient
@@ -130,8 +157,7 @@ class Postmark_Services_PostmarkApp
         if (! $postData) {
             throw new Exception('Post data is missing for Http Client.');
         }
-        require_once 'Zend/Http/Client.php';
-        $this->_client = new Zend_Http_Client();
+
         $this->_client->setUri($this->_uri);
         $this->_client->setMethod(Zend_Http_Client::POST);
         $this->_client->setHeaders(
@@ -142,7 +168,22 @@ class Postmark_Services_PostmarkApp
         );
         $this->_client->setRawData(json_encode($postData), 'application/json');
 
-        $this->_checkResponse();
+        $this->_checkResponse($this->_client->request());
+    }
+
+    /**
+     * _checkResponse
+     *
+     * @param Zend_Controller_Http_Response $response
+     * @return void
+     * @throws RuntimeException if the mail was not sent
+     */
+    private function _checkResponse($response)
+    {
+        if ($response->getStatus() != 200) {
+            $body = json_decode($response->getBody());
+            throw new RuntimeException('Mail not sent: ' . $body->Message);
+        }
     }
 
     /**
@@ -156,22 +197,5 @@ class Postmark_Services_PostmarkApp
             new Postmark_Mail_Transport_Postmark($this)
         );
     }
-
-    /**
-     * _checkResponse
-     *
-     * @return void
-     * @throws RuntimeException if the mail was not sent
-     */
-    private function _checkResponse()
-    {
-        $response = $this->_client->request();
-
-        if ($response->getStatus() != 200) {
-            $body = json_decode($response->getBody());
-            throw new RuntimeException('Mail not sent: ' . $body->Message);
-        }
-    }
-
 
 }

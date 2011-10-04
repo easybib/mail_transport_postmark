@@ -69,4 +69,12 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetGetClient()
+    {
+        $pm = new Postmark_Services_PostmarkApp();
+        $pm->setClient(new Zend_Http_Client);
+        $client = $pm->getClient();
+        $this->assertInstanceOf('Zend_Http_Client', $client);
+    }
+
 }
