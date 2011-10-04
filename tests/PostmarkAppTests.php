@@ -30,7 +30,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
     public function testMissingOptionsThrowsException()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException('LogicException');
 
         $postmark = new Services_PostmarkApp($this->_apiKey);
         $postmark->send(array());
@@ -39,7 +39,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
     public function testMissingFromThrowsException()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException('LogicException');
 
         $options = array(
             'To'       => 'egr <any@mail.com>',
@@ -54,7 +54,7 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
 
     public function testMissingToThrowsException()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException('LogicException');
 
         $options = array(
             'From'     => $this->_from,
