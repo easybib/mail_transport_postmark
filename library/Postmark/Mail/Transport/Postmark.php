@@ -10,6 +10,8 @@
  *
  */
 
+require_once 'Zend/Mime/Decode.php';
+
 class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
 {
     /**
@@ -17,24 +19,15 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
      */
     private $_postmark;
 
-
     /**
      * __construct
      *
-     * @param Postmark_Services_PostmarkApp $postmark
+     * @param Services_PostmarkApp $postmark
      * @return void
-     * @throws Exception if Services_PostmarkApp is missing
      */
-    public function __construct(Postmark_Services_PostmarkApp $postmark)
+    public function __construct(Services_PostmarkApp $postmark)
     {
-        if (! $postmark) {
-            throw new Exception(
-                __CLASS__ . ' must be instantiated with a PostmarkApp object'
-            );
-        }
-
         $this->_postmark = $postmark;
-        require_once('Zend/Mime/Decode.php');
     }
 
     /**
@@ -42,6 +35,8 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
      *
      * @return void
      * @uses Services_PostmarkApp::prepareClient()
+     * @uses imap_utf8()
+     * @todo Remove dependency on imap_utf8()
      */
     public function _sendMail()
     {
