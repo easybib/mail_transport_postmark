@@ -23,9 +23,8 @@
 
 require_once 'Zend/Http/Client.php';
 
-class Postmark_Services_PostmarkApp
+class Services_PostmarkApp
 {
-
     /**
      * @var string $_apiKey
      */
