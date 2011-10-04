@@ -169,22 +169,23 @@ class Postmark_Services_PostmarkApp
         );
         $this->_client->setRawData(json_encode($postData), 'application/json');
 
-        $this->_checkResponse($this->_client->request());
+        $this->parseResponse($this->_client->request());
     }
 
     /**
-     * _checkResponse
+     * parseResponse
      *
      * @param Zend_Controller_Http_Response $response
-     * @return void
+     * @return Zend_Controller_Http_Response
      * @throws RuntimeException if the mail was not sent
      */
-    private function _checkResponse($response)
+    protected function parseResponse($response)
     {
         if ($response->getStatus() != 200) {
             $body = json_decode($response->getBody());
             throw new RuntimeException('Mail not sent: ' . $body->Message);
         }
+        return $response;
     }
 
     /**
