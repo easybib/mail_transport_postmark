@@ -35,8 +35,7 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
      *
      * @return void
      * @uses Services_PostmarkApp::prepareClient()
-     * @uses imap_utf8()
-     * @todo Remove dependency on imap_utf8()
+     * @todo Write a test to cover special characters in subject (to confirm imap_utf8() is not necessary)
      */
     public function _sendMail()
     {
@@ -102,7 +101,7 @@ class Postmark_Mail_Transport_Postmark extends Zend_Mail_Transport_Abstract
             'To'       => implode( ',', $to ),
             'Cc'       => implode( ',', $cc ),
             'Bcc'      => implode( ',', $bcc),
-            'Subject'  => imap_utf8($this->_mail->getSubject()),
+            'Subject'  => $this->_mail->getSubject(),
             'ReplyTo'  => implode( ',', $replyto ),
             'tag'      => implode(',', $tags)
         );
