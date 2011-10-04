@@ -116,6 +116,7 @@ class Postmark_Services_PostmarkApp
     {
         try {
             $this->_mail->send();
+            return true;
         } catch (Exception $e) {
             throw $e;
         }

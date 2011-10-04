@@ -13,7 +13,9 @@ $options->bodyText = 'This is an example of a text body';
 $options->bodyHtml = 'This is an example of an HTML body with <strong>bold</strong>';
 
 $postmark = new Postmark_Services_PostmarkApp($options);
-$postmark->send();
+if ($postmark->send()) {
+    $message = 'your email was sent successfully';
+};
 
 ?>
 
