@@ -14,17 +14,35 @@ $options = array(
 
 $postmark = new Postmark_Services_PostmarkApp('Your API Key');
 
-if ($postmark->send()) {
+if ($postmark->send($options)) {
     $message = 'your email was sent successfully';
 };
 
 
 
 
-// OR
+// Batching messages
+
+$another =  array(
+    'From'     => 'Alistair Phillips <your-email-address>',
+    'To'       => 'Any Body <some-other-address>',
+    'Subject'  => 'Test',
+    'TextBody' => 'hello there',
+    'HtmlBody' => '<b>hello</b>'
+);
+
+$postmark = new Postmark_Services_PostmarkApp('Your API Key');
+
+$recipients = array($options, $another);
+
+if ($postmark->sendBatch($recipients)) {
+    $message = 'batching emails was successful';
+};
 
 
 
+
+// Using Zend_Mail
 
 $postmark  = new Services_PostmarkApp('Your API Key');
 $transport = new Postmark_Mail_Transport_Postmark($postmark)

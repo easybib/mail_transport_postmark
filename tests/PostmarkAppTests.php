@@ -378,5 +378,14 @@ class Services_PostmarkApp_TestCase extends PHPUnit_Framework_TestCase
         $pm->send(array());
     }
 
+    public function testHitBatchMaxLimit()
+    {
+        $this->setExpectedException('RuntimeException');
+
+        $data = array_fill(0, 600, null); // limit is 500
+
+        $postmark = new Services_PostmarkApp($this->_apiKey);
+        $postmark->sendBatch($data);
+    }
 
 }

@@ -26,6 +26,11 @@ require_once 'Zend/Http/Client.php';
 class Services_PostmarkApp
 {
     /**
+     * @var int $batchLimit From PostmarkApp
+     */
+    public $batchLimit = 500;
+
+    /**
      * @var string $_apiKey
      */
     private $_apiKey;
@@ -84,8 +89,8 @@ class Services_PostmarkApp
     /**
      * send
      *
-     * @param array $postData
-     * @return void
+     * @param array $postData ''
+     * @return bool
      */
     public function send(array $postData)
     {
@@ -102,12 +107,27 @@ class Services_PostmarkApp
     }
 
     /**
+     * sendBatch
+     *
+     * @param array $postData ''
+     * @return bool
+     */
+    public function sendBatch($postData)
+    {
+        if (count($postData) > $this->batchLimit) {
+            throw new RuntimeException('Maximum messages limit: ' . $this->batchLimit);
+        }
+        $this->_uri .= '/batch';
+        $this->send($postData);
+        return true;
+    }
+
+    /**
      * makeRequest
      *
      * @param string $uri ''
      * @param mixed  $method GET or POST
      * @param mixed  $data ''
-     *
      * @return void
      */
     protected function makeRequest($uri, $method, $data)
@@ -134,9 +154,7 @@ class Services_PostmarkApp
      * If all goes well, we return the body (stdClass).
      *
      * @param Zend_Controller_Http_Response $response
-     *
      * @return stdClass
-     *
      * @throws RuntimeException         If the mail was not sent
      * @throws UnexpectedValueException If Postmark couldn't handle the payload.
      */
