@@ -90,7 +90,7 @@ class Services_PostmarkApp
      * send
      *
      * @param array $postData ''
-     * @return bool
+     * @return mixed
      */
     public function send(array $postData)
     {
@@ -100,7 +100,7 @@ class Services_PostmarkApp
             );
 
             $response = $this->parseResponse($request);
-            return true;
+            return $response;
         } catch (Exception $e) {
             throw $e;
         }
@@ -118,8 +118,7 @@ class Services_PostmarkApp
             throw new RuntimeException('Maximum messages limit: ' . $this->batchLimit);
         }
         $this->_uri .= '/batch';
-        $this->send($postData);
-        return true;
+        return $this->send($postData);
     }
 
     /**
