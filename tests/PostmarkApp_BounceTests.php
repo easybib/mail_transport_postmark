@@ -40,11 +40,18 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
             'details'     => 'test bounce',
         );
 
+        $mapper = array(
+            'ID'        => 'postmark_id',
+            'Type'      => 'type',
+            'Email'     => 'email',
+            'BouncedAt' => 'bounced_at',
+            'Details'   => 'details'
+        );
 
         $this->request->setMethod('POST')->setPost(array())
             ->setRawBody(json_encode($data));
 
-        $hook = new Services_PostmarkApp_BounceHook($db);
+        $hook = new Services_PostmarkApp_BounceHook($db, $mapper);
         $hook->saveData($this->request);
 
         $fetched = $db->fetchRow($db->select()->where('id = ?', 1));

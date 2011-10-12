@@ -26,19 +26,28 @@ class Services_PostmarkApp_BounceHook
 
     /**
      * @var Zend_Db_Table_Abstract $_table
+     * @see __construct
      */
     private $_table;
+
+    /**
+     * @var array $mapper Used for mapping response keys to DB column names
+     * @see __construct
+     */
+    private $_mapper;
 
 
     /**
      * __construct
      *
-     * @param Zend_Db_Table_Abstract $table
+     * @param Zend_Db_Table_Abstract $table  DB table used for storage
+     * @param array                  $mapper Mapping of response keys to DB column names
      * @return void
      */
-    public function __construct(Zend_Db_Table_Abstract $table)
+    public function __construct(Zend_Db_Table_Abstract $table, array $mapper)
     {
-        $this->_table = $table;
+        $this->_table  = $table;
+        $this->_mapper = $mapper;
     }
 
     /**
@@ -56,7 +65,7 @@ class Services_PostmarkApp_BounceHook
             $data = get_object_vars($data);
         }
 
-        $data = $this->_adaptKeyNames($data);
+        $data = $this->_mapKeys($data);
 
         try {
             $this->_table->insert($data);
@@ -66,26 +75,20 @@ class Services_PostmarkApp_BounceHook
     }
 
     /**
-     * _adaptKeyNames
-     * Adapt array given by Postmark to fit to DB columns naming convention
+     * _mapKeys
+     * Adapt array given by Postmark to fit to DB column names
      *
      * @param array $arr ''
      *
      * @return array
      */
-    private function _adaptKeyNames(array $arr)
+    private function _mapKeys(array $arr)
     {
         $result = array();
         foreach ($arr as $key => $value) {
-            /**
-             * @desc Special case
-             * http://developer.postmarkapp.com/developer-bounces.html#bounce-hooks
-             */
-            if ($key == 'ID') {
-                $key = 'PostmarkId';
+            if (isset($this->_mapper[$key])) {
+                $result[$this->_mapper[$key]] = $value;
             }
-            $key = preg_replace('/\B([A-Z])/', '_$1', $key);
-            $result[strtolower($key)] = $value;
         }
         return $result;
     }

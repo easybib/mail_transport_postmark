@@ -1,8 +1,9 @@
 BounceHook saves data sent by Postmarkapp bounces [1] to a database.
 
-Your DB must have column names corresponding to Postmarkapp bounce data keys:
+Your have to provide a mapper corresponding to the column names where
+you want to save corresponding values:
 
-Postmarkapp sample bounce:
+Postmarkapp sample bounce example:
 {
   "ID" : 42,
   "Type" : "HardBounce",
@@ -31,7 +32,16 @@ your server URI for receiving Postmarkapp bounces:
 <?php
 
     $db   = new Zend_Db_Table_Abstract();
-    $hook = new Postmark_Services_PostmarkApp_BounceHook($db);
+
+    $mapper = array(
+        'ID'        => 'postmark_id',
+        'Type'      => 'type',
+        'Email'     => 'email',
+        'BouncedAt' => 'bounced_at',
+        'Details'   => 'details'
+    );
+
+    $hook = new Postmark_Services_PostmarkApp_BounceHook($db, $mapper);
     $hook->saveData($this->_request);
 
 ?>
