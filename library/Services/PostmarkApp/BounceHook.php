@@ -54,9 +54,10 @@ class Services_PostmarkApp_BounceHook
      * saveData
      *
      * @param Zend_Controller_Request_Http $request
+     * @param bool                         $update
      * @return void
      */
-    public function saveData(Zend_Controller_Request_Http $request)
+    public function saveData(Zend_Controller_Request_Http $request, $update = false, $column = null)
     {
         $body = $request->getRawBody();
         $data = json_decode($body);
@@ -68,7 +69,14 @@ class Services_PostmarkApp_BounceHook
         $data = $this->_mapKeys($data);
 
         try {
-            $this->_table->insert($data);
+            if ($update) {
+                $where = $this->_table->getAdapter()
+                    ->quoteInto($column . ' = ?', $data[$column]);
+
+                $this->_table->update($data, $where);
+            } else {
+                $this->_table->insert($data);
+            }
         } catch (Exception $e) {
             throw $e;
         }

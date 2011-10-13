@@ -81,6 +81,11 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
                 . 'VARCHAR(50) NOT NULL, bounced_at VARCHAR(10) NOT NULL, '
                 . 'details VARCHAR(50) NOT NULL);'
             );
+            $db->query(
+                'INSERT INTO tests (id, postmark_id, type, email, '
+                . 'bounced_at, details) VALUES (1, 42, "HardBounce", '
+                . '"jim@test.com", "2010-04-01", "test bounce");'
+            );
         } catch (Exception $e) {
             throw $e;
         }
