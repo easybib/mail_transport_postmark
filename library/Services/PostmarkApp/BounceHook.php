@@ -72,8 +72,8 @@ class Services_PostmarkApp_BounceHook
     /**
      * updateData Update data into database
      *
-     * @param Zend_Controller_Request_Http $request     The Http_Request
-     * @param string                       $column The DB column for the WHERE statement
+     * @param Zend_Controller_Request_Http $request Http_Request from Postmark
+     * @param string                       $column  DB column for the WHERE statement
      * @return bool
      * @throws Exception if database cannot be written
      */

@@ -46,7 +46,7 @@ your server URI for receiving Postmarkapp bounces:
     // insert into DB
     $hook->insertData($this->_request);
 
-    // or update data from DB (request, whereColumn='email')
+    // or update data from DB (request, whereColumn)
     $hook->updateData($this->_request, 'email');
 
 ?>
