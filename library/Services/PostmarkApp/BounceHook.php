@@ -51,13 +51,58 @@ class Services_PostmarkApp_BounceHook
     }
 
     /**
-     * saveData
+     * insertData Insert data into database
      *
      * @param Zend_Controller_Request_Http $request
-     * @param bool                         $update
-     * @return void
+     * @return bool
+     * @throws Exception if database cannot be written
      */
-    public function saveData(Zend_Controller_Request_Http $request, $update = false, $column = null)
+    public function insertData(Zend_Controller_Request_Http $request)
+    {
+        $data = $this->_parseRequest($request);
+
+        try {
+            $this->_table->insert($data);
+            return true;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * updateData Update data into database
+     *
+     * @param Zend_Controller_Request_Http $request     The Http_Request
+     * @param string                       $column The DB column for the WHERE statement
+     * @return bool
+     * @throws Exception if database cannot be written
+     */
+    public function updateData(Zend_Controller_Request_Http $request, $column)
+    {
+        $data = $this->_parseRequest($request);
+        if (! is_string($column) || ! in_array($column, $this->_mapper)) {
+            throw new Exception('Incorrect column name.');
+        }
+
+        try {
+            $where = $this->_table->getAdapter()
+                ->quoteInto($column . ' = ?', $data[$column]);
+
+            $this->_table->update($data, $where);
+            return true;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * _parseRequest Parse HTTP request into an array using self::$_mapper
+     *               to match database column names.
+     *
+     * @param Zend_Controller_Request_Http $request ''
+     * @return array
+     */
+    private function _parseRequest(Zend_Controller_Request_Http $request)
     {
         $body = $request->getRawBody();
         $data = json_decode($body);
@@ -66,20 +111,7 @@ class Services_PostmarkApp_BounceHook
             $data = get_object_vars($data);
         }
 
-        $data = $this->_mapKeys($data);
-
-        try {
-            if ($update) {
-                $where = $this->_table->getAdapter()
-                    ->quoteInto($column . ' = ?', $data[$column]);
-
-                $this->_table->update($data, $where);
-            } else {
-                $this->_table->insert($data);
-            }
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return $this->_mapKeys($data);
     }
 
     /**
@@ -87,7 +119,6 @@ class Services_PostmarkApp_BounceHook
      * Adapt array given by Postmark to fit to DB column names
      *
      * @param array $arr ''
-     *
      * @return array
      */
     private function _mapKeys(array $arr)

@@ -44,10 +44,10 @@ your server URI for receiving Postmarkapp bounces:
     $hook = new Postmark_Services_PostmarkApp_BounceHook($db, $mapper);
 
     // insert into DB
-    $hook->saveData($this->_request);
+    $hook->insertData($this->_request);
 
-    // or update DB (update=true, whereColumn='email')
-    $hook->saveData($this->_request, true, 'email');
+    // or update data from DB (request, whereColumn='email')
+    $hook->updateData($this->_request, 'email');
 
 ?>
 

@@ -19,7 +19,7 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
     }
 
 
-    public function testSaveData()
+    public function testInsertData()
     {
         $this->_setupDb();
         $db = new Services_Tests_Db();
@@ -52,11 +52,114 @@ class Services_PostmarkApp_Bounce_TestCase extends Zend_Test_PHPUnit_ControllerT
             ->setRawBody(json_encode($data));
 
         $hook = new Services_PostmarkApp_BounceHook($db, $mapper);
-        $hook->saveData($this->request);
+        $hook->insertData($this->request);
 
         $fetched = $db->fetchRow($db->select()->where('id = ?', 1));
 
         $this->assertEquals($fetched->toArray(), $expected);
+    }
+
+
+    public function testUpdateData()
+    {
+        $this->_setupDb();
+        $db = new Services_Tests_Db();
+
+        $data = array(
+            'ID'        => 42,
+            'Type'      => 'HardBounce',
+            'Email'     => 'jim@test.com',
+            'BouncedAt' => '2011-12-31',  // updated
+            'Details'   => 'test update', // updated
+        );
+        $expected = array(
+            'id'          => 1,
+            'postmark_id' => 42,
+            'type'        => 'HardBounce',
+            'email'       => 'jim@test.com',
+            'bounced_at'  => '2011-12-31',
+            'details'     => 'test update',
+        );
+
+        $mapper = array(
+            'ID'        => 'postmark_id',
+            'Type'      => 'type',
+            'Email'     => 'email',
+            'BouncedAt' => 'bounced_at',
+            'Details'   => 'details'
+        );
+
+        $this->request->setMethod('POST')->setPost(array())
+            ->setRawBody(json_encode($data));
+
+        $hook = new Services_PostmarkApp_BounceHook($db, $mapper);
+        $hook->updateData($this->request, 'email');
+
+        $fetched = $db->fetchRow($db->select()->where('id = ?', 1));
+
+        $this->assertEquals($fetched->toArray(), $expected);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testUpdateDataWithMissingColumnThrowsException()
+    {
+        $this->_setupDb();
+        $db = new Services_Tests_Db();
+
+        $data = array(
+            'ID'        => 42,
+            'Type'      => 'HardBounce',
+            'Email'     => 'jim@test.com',
+            'BouncedAt' => '2011-12-31',  // updated
+            'Details'   => 'test update', // updated
+        );
+
+        $mapper = array(
+            'ID'        => 'postmark_id',
+            'Type'      => 'type',
+            'Email'     => 'email',
+            'BouncedAt' => 'bounced_at',
+            'Details'   => 'details'
+        );
+
+        $this->request->setMethod('POST')->setPost(array())
+            ->setRawBody(json_encode($data));
+
+        $hook = new Services_PostmarkApp_BounceHook($db, $mapper);
+        $hook->updateData($this->request);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testUpdateDataWithIncorrectColumnThrowsException()
+    {
+        $this->_setupDb();
+        $db = new Services_Tests_Db();
+
+        $data = array(
+            'ID'        => 42,
+            'Type'      => 'HardBounce',
+            'Email'     => 'jim@test.com',
+            'BouncedAt' => '2011-12-31',  // updated
+            'Details'   => 'test update', // updated
+        );
+
+        $mapper = array(
+            'ID'        => 'postmark_id',
+            'Type'      => 'type',
+            'Email'     => 'email',
+            'BouncedAt' => 'bounced_at',
+            'Details'   => 'details'
+        );
+
+        $this->request->setMethod('POST')->setPost(array())
+            ->setRawBody(json_encode($data));
+
+        $hook = new Services_PostmarkApp_BounceHook($db, $mapper);
+        $hook->updateData($this->request, 'wrongColumnName');
     }
 
 
